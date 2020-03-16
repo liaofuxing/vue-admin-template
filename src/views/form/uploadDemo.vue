@@ -1,6 +1,6 @@
 <template>
   <div class="upload">
-    <upload/>
+    <upload />
   </div>
 </template>
 
@@ -8,8 +8,8 @@
 import upload from '@/components/Upload/upload'
 
 export default {
-  name: 'uploadDemo',
-  components:{
+  name: 'UploadDemo',
+  components: {
     upload
   }
 }
