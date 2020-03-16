@@ -219,7 +219,7 @@ export default {
     },
     editRow: function(index, data) {
       this.form = data[index]
-      // 获取角色列表
+      // 获取角色列表（下拉框）
       getRoleList().then(res => {
         this.roleOption = res.data
       })
