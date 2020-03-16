@@ -22,3 +22,10 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function getRoleList() {
+  return request({
+    url: 'http://localhost:8090/system/role/getRoleAll',
+    method: 'get'
+  })
+}

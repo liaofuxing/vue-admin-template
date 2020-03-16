@@ -49,8 +49,8 @@
           <el-button
             type="text"
             size="small"
-            @click.native.prevent="deleteRow(scope.$index, tableData)"
-          >移除</el-button>
+            @click.native.prevent="editRow(scope.$index, tableData)"
+          >修改</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -63,12 +63,93 @@
         @pageSizeChange="pageSizeChange"
       />
     </div>
+    <div>
+      <el-dialog title="编辑" :visible.sync="dialogFormVisible">
+        <el-form label-width="80px">
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="用户名">
+                <el-input v-model="form.username" class="searchParam-input" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="账号">
+                <el-input v-model="form.account" class="searchParam-input" :disabled="true" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="性别">
+                <el-select v-model="form.gender" placeholder="请选择">
+                  <el-option
+                    v-for="item in genderOption"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="地址">
+                <el-input v-model="form.address" class="searchParam-input" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="年龄">
+                <el-input v-model="form.age" class="searchParam-input" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="电话">
+                <el-input v-model="form.phone" class="searchParam-input" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="角色">
+                <el-select v-model="form.role" placeholder="请选择">
+                  <el-option
+                    v-for="item in roleOption"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="部门">
+                <el-select v-model="form.department" placeholder="请选择">
+                  <el-option
+                    v-for="item in roleOption"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogFormSubmit">确 定</el-button>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
 <script>
 import pagination from '@/components/Pagination/pagination'
 import { getList } from '@/api/table'
+
+import { getRoleList } from '@/api/user'
 
 export default {
   name: 'User',
@@ -88,7 +169,24 @@ export default {
         pageSize: 3,
         // 一共多少条数据
         total: 0
-      }
+      },
+      form: {
+        username: null,
+        account: null,
+        gender: null,
+        age: null,
+        address: null,
+        phone: null,
+        role: null,
+        department: null
+      },
+      formLabelWidth: '120px',
+      dialogFormVisible: false,
+      genderOption: [
+        { label: '男', value: 1 },
+        { label: '女', value: 2 }
+      ],
+      roleOption: []
     }
   },
   mounted() {
@@ -97,7 +195,7 @@ export default {
   methods: {
     getUserList: function(param) {
       getList(param).then(res => {
-        this.tableData = res.data.pageDate
+        this.tableData = res.data.pageData
         this.searchParam.total = res.data.total
       })
     },
@@ -113,6 +211,22 @@ export default {
     },
     handleSearchButtonClick: function() {
       this.getUserList(this.searchParam)
+    },
+    editRow: function(index, data) {
+      this.form.account = data[index].account
+      this.form.username = data[index].username
+      this.form.age = data[index].age
+      this.form.address = data[index].address
+      this.form.phone = data[index].phone
+      this.form.gender = 1
+      // 获取角色列表
+      getRoleList().then(res => {
+        this.roleOption = res.data
+      })
+      this.dialogFormVisible = true
+    },
+    dialogFormSubmit: function() {
+      console.log(this.form.account)
     }
   }
 }
@@ -123,7 +237,7 @@ export default {
     margin-bottom: 20px;
   }
   .label-input {
-    padding: 20px;
+    padding-right: 50px;
     color: #909399;
   }
   .searchParam-input {
