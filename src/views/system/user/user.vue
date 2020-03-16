@@ -37,9 +37,10 @@
       <el-table-column prop="username" label="用户名" width="120" />
       <el-table-column prop="age" label="年龄" width="120" />
       <el-table-column prop="phone" label="电话" width="120" />
-      <el-table-column prop="gender" label="性别" width="120" />
+      <el-table-column prop="genderLabel" label="性别" width="120" />
       <el-table-column prop="departmentName" label="部门" width="160" />
-      <el-table-column prop="address" label="地址" width="400" />
+      <el-table-column prop="address" label="地址" width="300" />
+      <el-table-column prop="updateTime" label="更新时间" width="200" />
       <el-table-column
         fixed="right"
         label="操作"
@@ -138,7 +139,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogFormSubmit">确 定</el-button>
+          <el-button type="primary" @click="dialogFormSubmit()">确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -150,6 +151,8 @@ import pagination from '@/components/Pagination/pagination'
 import { getList } from '@/api/table'
 
 import { getRoleList } from '@/api/user'
+import { editUser } from '@/api/user'
+import { parseTime } from '@/utils/index'
 
 export default {
   name: 'User',
@@ -171,6 +174,7 @@ export default {
         total: 0
       },
       form: {
+        id: null,
         username: null,
         account: null,
         gender: null,
@@ -178,7 +182,8 @@ export default {
         address: null,
         phone: null,
         role: null,
-        department: null
+        department: null,
+        updateTime: null
       },
       formLabelWidth: '120px',
       dialogFormVisible: false,
@@ -213,12 +218,7 @@ export default {
       this.getUserList(this.searchParam)
     },
     editRow: function(index, data) {
-      this.form.account = data[index].account
-      this.form.username = data[index].username
-      this.form.age = data[index].age
-      this.form.address = data[index].address
-      this.form.phone = data[index].phone
-      this.form.gender = 1
+      this.form = data[index]
       // 获取角色列表
       getRoleList().then(res => {
         this.roleOption = res.data
@@ -226,7 +226,11 @@ export default {
       this.dialogFormVisible = true
     },
     dialogFormSubmit: function() {
-      console.log(this.form.account)
+      // 将dialog form updateTime 更新用来驱动table表格updateTime更新，并传回后台
+      const date = new Date()
+      this.form.updateTime = parseTime(date, '{y}-{m}-{d} {h}:{i}:{s}')
+      editUser(this.form)
+      this.dialogFormVisible = false
     }
   }
 }
