@@ -4,13 +4,13 @@ const routers = {
   state: {
     RouterList: [] // 动态路由
   },
-  
+
   mutations: {
     set_router: (state, RouterList) => {
       state.RouterList = RouterList
     }
   },
-  
+
   actions: {
     // 动态设置路由 此为设置设置途径
     setRouterList({ commit }, routerList) {
@@ -19,4 +19,4 @@ const routers = {
   }
 }
 
-  export default routers
+export default routers
