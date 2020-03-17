@@ -149,10 +149,7 @@
 
 <script>
 import pagination from '@/components/Pagination/pagination'
-import { getList } from '@/api/table'
-
-import { getRoleSelect } from '@/api/user'
-import { getDepartmentSelect } from '@/api/user'
+import { getRoleSelect, getDepartmentSelect, getList } from '@/api/user'
 import { editUser } from '@/api/user'
 import { parseTime } from '@/utils/index'
 
