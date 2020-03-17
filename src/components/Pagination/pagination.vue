@@ -2,7 +2,7 @@
   <el-pagination
     :total="total"
     :current-page="page"
-    :page-sizes="[3, 6, 9]"
+    :page-sizes="pageSizes"
     :page-size="pageSize"
     layout="total, sizes, prev, pager, next, jumper"
     @current-change="handleCurrentChange"
@@ -24,6 +24,12 @@ export default {
     total: {
       type: Number,
       default: 5
+    },
+    pageSizes: {
+      type: Array,
+      default: function() {
+        return [5, 10, 15]
+      }
     }
   },
   methods: {

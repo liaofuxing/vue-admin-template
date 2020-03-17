@@ -60,6 +60,7 @@
         :page="searchParam.page"
         :page-size="searchParam.pageSize"
         :total="searchParam.total"
+        :page-sizes="pageSizes"
         @pageChange="pageChange"
         @pageSizeChange="pageSizeChange"
       />
@@ -113,7 +114,7 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="角色">
-                <el-select v-model="form.role" placeholder="请选择">
+                <el-select v-model="form.roleId" placeholder="请选择">
                   <el-option
                     v-for="item in roleOption"
                     :key="item.value"
@@ -125,9 +126,9 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="部门">
-                <el-select v-model="form.department" placeholder="请选择">
+                <el-select v-model="form.departmentId" placeholder="请选择">
                   <el-option
-                    v-for="item in roleOption"
+                    v-for="item in departmentOption"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -150,7 +151,8 @@
 import pagination from '@/components/Pagination/pagination'
 import { getList } from '@/api/table'
 
-import { getRoleList } from '@/api/user'
+import { getRoleSelect } from '@/api/user'
+import { getDepartmentSelect } from '@/api/user'
 import { editUser } from '@/api/user'
 import { parseTime } from '@/utils/index'
 
@@ -173,6 +175,7 @@ export default {
         // 一共多少条数据
         total: 0
       },
+      pageSizes: [3, 6, 9],
       form: {
         id: null,
         username: null,
@@ -181,8 +184,8 @@ export default {
         age: null,
         address: null,
         phone: null,
-        role: null,
-        department: null,
+        roleId: null,
+        departmentId: null,
         updateTime: null
       },
       formLabelWidth: '120px',
@@ -191,7 +194,8 @@ export default {
         { label: '男', value: 1 },
         { label: '女', value: 2 }
       ],
-      roleOption: []
+      roleOption: [],
+      department: []
     }
   },
   mounted() {
@@ -220,8 +224,12 @@ export default {
     editRow: function(index, data) {
       this.form = data[index]
       // 获取角色列表（下拉框）
-      getRoleList().then(res => {
+      getRoleSelect().then(res => {
         this.roleOption = res.data
+      })
+      // 获取部门下拉
+      getDepartmentSelect().then(res => {
+        this.departmentOption = res.data
       })
       this.dialogFormVisible = true
     },
