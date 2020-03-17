@@ -4,7 +4,7 @@ export function getList(params) {
   return request({
     url: 'http://192.168.31.100:8090/system/role/getRoleList',
     method: 'get',
-    data: params
+    params
   })
 }
 
