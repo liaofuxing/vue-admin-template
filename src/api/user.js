@@ -4,7 +4,7 @@ export function getList(params) {
   return request({
     url: 'http://192.168.31.100:8090/system/systemUser/findSystemUserPage',
     method: 'post',
-    params
+    data: params
   })
 }
 
@@ -12,7 +12,7 @@ export function editUser(params) {
   return request({
     url: 'http://localhost:8090/system/systemUser/editSystemUser',
     method: 'post',
-    params
+    data: params
   })
 }
 
