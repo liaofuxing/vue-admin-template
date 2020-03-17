@@ -85,7 +85,7 @@ function gotoRouter(to, next) {
       router.addRoutes(asyncRouter) // vue-router提供的addRouter方法进行路由拼接
       data = true // 记录路由获取状态
       store.dispatch('setRouterList', asyncRouter) // 存储到vuex
-      console.log(store.state.routers.RouterList)
+      // console.log(store.state.routers.RouterList)
       next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
     })
     .catch(e => {
