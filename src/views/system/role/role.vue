@@ -17,6 +17,7 @@
       </el-row>
     </div>
     <el-table
+      :key="Math.random()"
       :data="tableData"
       style="width: 100%"
       max-height="100%"
@@ -43,7 +44,7 @@
         :page="searchParam.page"
         :page-size="searchParam.pageSize"
         :total="searchParam.total"
-        :page-sizes="pageSize"
+        :page-sizes="pageSizes"
         @pageChange="pageChange"
         @pageSizeChange="pageSizeChange"
       />
@@ -65,7 +66,7 @@
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button @click="dialogFormCancel()">取 消</el-button>
           <el-button type="primary" @click="dialogFormSubmit()">确 定</el-button>
         </div>
       </el-dialog>
@@ -102,7 +103,8 @@ export default {
       formLabelWidth: '120px',
       dialogFormVisible: false,
       dialogTitle: '',
-      pageSizes: [5, 10, 15]
+      pageSizes: [5, 10, 15],
+      tableRowData: ''
     }
   },
   mounted() {
@@ -141,20 +143,29 @@ export default {
     },
     editRow: function(index, data) {
       this.dialogTitle = '编辑'
-      this.form = data[index]
+      const dataConst = data[index]
+      this.form = dataConst
       this.dialogFormVisible = true
     },
     dialogFormSubmit: function() {
       // 将dialog form updateTime 更新用来驱动table表格updateTime更新，并传回后台
       // const date = new Date()
       // this.form.updateTime = parseTime(date, '{y}-{m}-{d} {h}:{i}:{s}')
+      // 应该在then回调里刷新数据，这样能保证，请求到的是更新后的数据
       if (this.dialogTitle === '新增') {
-        addRole(this.form)
-        this.getRoleList(this.searchParam)
+        addRole(this.form).then(res => {
+          this.getRoleList(this.searchParam)
+        })
       }
       if (this.dialogTitle === '编辑') {
-        editRole(this.form)
+        editRole(this.form).then(res => {
+          this.getRoleList(this.searchParam)
+        })
       }
+      this.dialogFormVisible = false
+    },
+    dialogFormCancel: function() {
+      this.getRoleList(this.searchParam)
       this.dialogFormVisible = false
     }
   }

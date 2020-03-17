@@ -37,8 +37,8 @@
       <el-table-column prop="username" label="用户名" width="120" />
       <el-table-column prop="age" label="年龄" width="120" />
       <el-table-column prop="phone" label="电话" width="120" />
-      <el-table-column prop="genderLabel" label="性别" width="120" />
-      <el-table-column prop="departmentName" label="部门" width="160" />
+      <el-table-column prop="gender" label="性别" :formatter="formatGender" width="120" />
+      <el-table-column prop="departmentId" :formatter="formatDepartment" label="部门" width="160" />
       <el-table-column prop="address" label="地址" width="300" />
       <el-table-column prop="updateTime" label="更新时间" width="200" />
       <el-table-column
@@ -149,8 +149,7 @@
 
 <script>
 import pagination from '@/components/Pagination/pagination'
-import { getRoleSelect, getDepartmentSelect, getList } from '@/api/user'
-import { editUser } from '@/api/user'
+import { getRoleSelect, getDepartmentSelect, getList, editUser } from '@/api/user'
 import { parseTime } from '@/utils/index'
 
 export default {
@@ -192,13 +191,33 @@ export default {
         { label: '女', value: 2 }
       ],
       roleOption: [],
-      department: []
+      departmentOption: []
     }
   },
   mounted() {
     this.getUserList(this.searchParam)
+    // 获取角色列表（下拉框）
+    getRoleSelect().then(res => {
+      this.roleOption = res.data
+    })
+    // 获取部门下拉
+    getDepartmentSelect().then(res => {
+      this.departmentOption = res.data
+    })
   },
   methods: {
+    formatGender: function(row, column) {
+      return row.gender === 1 ? '男' : row.gender === 0 ? '女' : '未知'
+    },
+    formatDepartment: function(row, column) {
+      let label = ''
+      this.departmentOption.forEach(element => {
+        if (row.departmentId === element.value) {
+          label = element.label
+        }
+      })
+      return label
+    },
     getUserList: function(param) {
       getList(param).then(res => {
         this.tableData = res.data.pageData
@@ -220,14 +239,6 @@ export default {
     },
     editRow: function(index, data) {
       this.form = data[index]
-      // 获取角色列表（下拉框）
-      getRoleSelect().then(res => {
-        this.roleOption = res.data
-      })
-      // 获取部门下拉
-      getDepartmentSelect().then(res => {
-        this.departmentOption = res.data
-      })
       this.dialogFormVisible = true
     },
     dialogFormSubmit: function() {
