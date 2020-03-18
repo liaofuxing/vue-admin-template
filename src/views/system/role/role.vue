@@ -57,7 +57,12 @@
         <el-container style="height: 250px;">
           <el-aside width="200px">
             <label>编辑菜单权限</label>
-            <tree :tree-data="treeData" />
+            <tree
+              :tree-data="treeData"
+              :tree-checked="menuTreeChecked"
+              :menu-key="Math.random()"
+              @treeCheckChange="treeCheckChange"
+            />
           </el-aside>
           <el-container>
             <el-form label-width="80px">
@@ -88,7 +93,7 @@
 <script>
 import pagination from '@/components/Pagination/pagination'
 import tree from '@/components/Tree/tree'
-import { getList, editRole, addRole } from '@/api/role'
+import { getList, editRole, addRole, getRoleMenu } from '@/api/role'
 import { getMenuTree } from '@/api/menu'
 
 export default {
@@ -112,13 +117,16 @@ export default {
       form: {
         id: null,
         roleName: null,
-        description: null
+        description: null,
+        treeChecked: []
       },
       formLabelWidth: '120px',
       dialogFormVisible: false,
       dialogTitle: '',
       pageSizes: [5, 10, 15],
-      treeData: []
+      treeData: [],
+      menuTreeChecked: [],
+      showAlert: false
     }
   },
   mounted() {
@@ -164,6 +172,13 @@ export default {
       this.dialogTitle = '编辑'
       const dataConst = data[index]
       this.form = dataConst
+      // 获取角色对应菜单
+      getRoleMenu(this.form).then(res => {
+        this.menuTreeChecked = []
+        if (res.data.length > 0) {
+          this.menuTreeChecked = res.data
+        }
+      })
       this.dialogFormVisible = true
     },
     handleExportButtonClick: function() {
@@ -174,6 +189,14 @@ export default {
       // const date = new Date()
       // this.form.updateTime = parseTime(date, '{y}-{m}-{d} {h}:{i}:{s}')
       // 应该在then回调里刷新数据，这样能保证，请求到的是更新后的数据
+      if (this.menuTreeChecked.length === 0) {
+        this.$notify.error({
+          title: '错误',
+          message: '必须为角色设置菜单权限'
+        })
+        return
+      }
+      this.form.treeChecked = this.menuTreeChecked.toString()
       if (this.dialogTitle === '新增') {
         addRole(this.form).then(res => {
           this.getRoleList(this.searchParam)
@@ -189,6 +212,9 @@ export default {
     dialogFormCancel: function() {
       this.getRoleList(this.searchParam)
       this.dialogFormVisible = false
+    },
+    treeCheckChange: function(checkedArr) {
+      this.menuTreeChecked = checkedArr
     }
   }
 }
@@ -208,5 +234,15 @@ export default {
   .pagination-div {
     margin-top: 20px;
     text-align: center;
+  }
+  .alert-outer-div {
+    text-align: center;
+  }
+  .alert-div {
+    position: absolute;
+    width: 250px;
+    z-index: 100;
+    left: 20%;
+    top: 20px;
   }
 </style>

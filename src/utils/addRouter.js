@@ -24,7 +24,7 @@ export function addRouter(routerlist) {
     if (e.redirect) {
       new_router = Object.assign({}, new_router, { redirect: e.redirect })
     }
-    if (e.generatemenu === 1) {
+    if (e.hidden === 1) {
       new_router = Object.assign({}, new_router, { hidden: true })
     }
     if (e.component === 'Layout') {

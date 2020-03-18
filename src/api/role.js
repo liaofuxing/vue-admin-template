@@ -23,3 +23,11 @@ export function addRole(params) {
     data: params
   })
 }
+
+export function getRoleMenu(params) {
+  return request({
+    url: 'http://192.168.31.100:8090/system/role/getRoleMenu',
+    method: 'get',
+    params
+  })
+}

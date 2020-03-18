@@ -53,26 +53,7 @@ export const constantRoutes = [
     }]
   },
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    meta: { title: 'Home1', icon: 'dashboard' },
-    hidden: true,
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Home1', icon: 'dashboard' }
-    },
-    {
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Home2', icon: 'dashboard' }
-    }]
-  }
+  { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
