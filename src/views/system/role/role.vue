@@ -164,6 +164,7 @@ export default {
         roleName: null,
         description: null
       }
+      this.menuTreeChecked = []
       this.form = clearForm
       this.dialogTitle = '新增'
       this.dialogFormVisible = true
