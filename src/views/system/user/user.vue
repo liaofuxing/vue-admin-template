@@ -27,12 +27,16 @@
         </el-col>
       </el-row>
     </div>
+    <div class="action-div-bar">
+      <el-button type="primary" icon="el-icon-circle-plus" size="small" @click="handleAddButtonClick">新增</el-button>
+      <el-button type="success" icon="el-icon-download" size="small" @click="handleExportButtonClick">导出</el-button>
+    </div>
     <el-table
       :data="tableData"
       style="width: 100%"
       max-height="100%"
     >
-      <el-table-column fixed prop="id" label="ID" width="150" />
+      <el-table-column type="index" width="150" />
       <el-table-column prop="account" label="账号" width="140" />
       <el-table-column prop="username" label="用户名" width="120" />
       <el-table-column prop="age" label="年龄" width="120" />
@@ -66,7 +70,7 @@
       />
     </div>
     <div>
-      <el-dialog title="编辑" :visible.sync="dialogFormVisible">
+      <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
         <el-form label-width="80px">
           <el-row :gutter="20">
             <el-col :span="12">
@@ -149,7 +153,7 @@
 
 <script>
 import pagination from '@/components/Pagination/pagination'
-import { getRoleSelect, getDepartmentSelect, getList, editUser } from '@/api/user'
+import { getRoleSelect, getDepartmentSelect, getList, editUser, addUser } from '@/api/user'
 import { parseTime } from '@/utils/index'
 
 export default {
@@ -191,7 +195,8 @@ export default {
         { label: '女', value: 2 }
       ],
       roleOption: [],
-      departmentOption: []
+      departmentOption: [],
+      dialogTitle: ''
     }
   },
   mounted() {
@@ -207,7 +212,7 @@ export default {
   },
   methods: {
     formatGender: function(row, column) {
-      return row.gender === 1 ? '男' : row.gender === 0 ? '女' : '未知'
+      return row.gender === 1 ? '男' : row.gender === 2 ? '女' : '未知'
     },
     formatDepartment: function(row, column) {
       let label = ''
@@ -238,15 +243,57 @@ export default {
       this.getUserList(this.searchParam)
     },
     editRow: function(index, data) {
+      this.dialogTitle = '编辑'
       this.form = data[index]
       this.dialogFormVisible = true
     },
+    handleAddButtonClick: function() {
+      // 清除form值
+      const clearForm = {
+        id: null,
+        username: null,
+        account: null,
+        gender: null,
+        age: null,
+        address: null,
+        phone: null,
+        roleId: null,
+        departmentId: null,
+        creationTime: null,
+        updateTime: null
+      }
+      this.form = clearForm
+      this.form.account = this.getUuid()
+      this.dialogTitle = '新增'
+      this.dialogFormVisible = true
+    },
+    handleExportButtonClick: function() {
+
+    },
     dialogFormSubmit: function() {
-      // 将dialog form updateTime 更新用来驱动table表格updateTime更新，并传回后台
       const date = new Date()
-      this.form.updateTime = parseTime(date, '{y}-{m}-{d} {h}:{i}:{s}')
-      editUser(this.form)
+      const dateParse = parseTime(date, '{y}-{m}-{d} {h}:{i}:{s}')
+      if (this.dialogTitle === '新增') {
+        this.form.creationTime = dateParse
+        this.form.updateTime = dateParse
+        addUser(this.form).then(res => {
+          this.getUserList(this.searchParam)
+        })
+      }
+      if (this.dialogTitle === '编辑') {
+        // 将dialog form updateTime 更新用来驱动table表格updateTime更新，并传回后台
+        this.form.updateTime = dateParse
+        editUser(this.form).then(res => {
+          this.getUserList(this.searchParam)
+        })
+      }
       this.dialogFormVisible = false
+    },
+    getUuid: function() {
+      function S4() {
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+      }
+      return (S4() + S4())
     }
   }
 }

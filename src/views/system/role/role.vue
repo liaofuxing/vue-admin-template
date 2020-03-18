@@ -11,10 +11,13 @@
         <el-col :span="12">
           <div class="grid-content bg-purple">
             <el-button type="primary" icon="el-icon-search" size="small" @click="handleSearchButtonClick">查询</el-button>
-            <el-button type="primary" icon="el-icon-circle-plus" size="small" @click="handleAddButtonClick">新增</el-button>
           </div>
         </el-col>
       </el-row>
+    </div>
+    <div class="action-div-bar">
+      <el-button type="primary" icon="el-icon-circle-plus" size="small" @click="handleAddButtonClick">新增</el-button>
+      <el-button type="success" icon="el-icon-download" size="small" @click="handleExportButtonClick">导出</el-button>
     </div>
     <el-table
       :key="Math.random()"
@@ -22,7 +25,7 @@
       style="width: 100%"
       max-height="100%"
     >
-      <el-table-column fixed prop="id" label="ID" width="300" />
+      <el-table-column type="index" width="300" />
       <el-table-column prop="roleName" label="角色" width="300" />
       <el-table-column prop="description" label="描述" width="300" />
       <el-table-column
@@ -51,20 +54,28 @@
     </div>
     <div>
       <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
-        <el-form label-width="80px">
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="角色">
-                <el-input v-model="form.roleName" class="searchParam-input" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="描述">
-                <el-input v-model="form.description" class="searchParam-input" />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
+        <el-container style="height: 250px;">
+          <el-aside width="200px">
+            <label>编辑菜单权限</label>
+            <tree :tree-data="treeData" />
+          </el-aside>
+          <el-container>
+            <el-form label-width="80px">
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <el-form-item label="角色">
+                    <el-input v-model="form.roleName" class="searchParam-input" />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="描述">
+                    <el-input v-model="form.description" class="searchParam-input" />
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+          </el-container>
+        </el-container>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormCancel()">取 消</el-button>
           <el-button type="primary" @click="dialogFormSubmit()">确 定</el-button>
@@ -76,12 +87,15 @@
 
 <script>
 import pagination from '@/components/Pagination/pagination'
+import tree from '@/components/Tree/tree'
 import { getList, editRole, addRole } from '@/api/role'
+import { getMenuTree } from '@/api/menu'
 
 export default {
   name: 'Role',
   components: {
-    pagination
+    pagination,
+    tree
   },
   data() {
     return {
@@ -104,11 +118,16 @@ export default {
       dialogFormVisible: false,
       dialogTitle: '',
       pageSizes: [5, 10, 15],
-      tableRowData: ''
+      treeData: []
     }
   },
   mounted() {
     this.getRoleList(this.searchParam)
+
+    // 获取菜单数据
+    getMenuTree().then(res => {
+      this.treeData = res.data
+    })
   },
   methods: {
     getRoleList: function(param) {
@@ -146,6 +165,9 @@ export default {
       const dataConst = data[index]
       this.form = dataConst
       this.dialogFormVisible = true
+    },
+    handleExportButtonClick: function() {
+
     },
     dialogFormSubmit: function() {
       // 将dialog form updateTime 更新用来驱动table表格updateTime更新，并传回后台

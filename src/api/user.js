@@ -16,6 +16,14 @@ export function editUser(params) {
   })
 }
 
+export function addUser(params) {
+  return request({
+    url: 'http://localhost:8090/system/systemUser/addSystemUser',
+    method: 'post',
+    data: params
+  })
+}
+
 // 获取角色下拉
 export function getRoleSelect() {
   return request({
