@@ -44,6 +44,7 @@
       <el-table-column prop="gender" label="性别" :formatter="formatGender" width="120" />
       <el-table-column prop="departmentId" :formatter="formatDepartment" label="部门" width="160" />
       <el-table-column prop="address" label="地址" width="300" />
+      <el-table-column prop="enabledFlag" :formatter="formatenabledFlag" label="是否停用" width="120" />
       <el-table-column prop="updateTime" label="更新时间" width="200" />
       <el-table-column
         fixed="right"
@@ -141,6 +142,20 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="是否停用">
+                <el-select v-model="form.enabledFlag" placeholder="请选择">
+                  <el-option
+                    v-for="item in enabledFlagOption"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -186,13 +201,18 @@ export default {
         phone: null,
         roleId: null,
         departmentId: null,
-        updateTime: null
+        updateTime: null,
+        enabledFlag: null
       },
       formLabelWidth: '120px',
       dialogFormVisible: false,
       genderOption: [
         { label: '男', value: 1 },
         { label: '女', value: 2 }
+      ],
+      enabledFlagOption: [
+        { label: '否', value: 0 },
+        { label: '是', value: 1 }
       ],
       roleOption: [],
       departmentOption: [],
@@ -222,6 +242,9 @@ export default {
         }
       })
       return label
+    },
+    formatenabledFlag: function(row, column) {
+      return row.enabledFlag === 0 ? '否' : row.enabledFlag === 1 ? '是' : '否'
     },
     getUserList: function(param) {
       getList(param).then(res => {
