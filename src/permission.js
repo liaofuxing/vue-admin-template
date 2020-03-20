@@ -11,7 +11,6 @@ import { addRouter } from './utils/addRouter'
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login'] // no redirect whitelist
-// var data = false
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
@@ -33,11 +32,12 @@ router.beforeEach(async(to, from, next) => {
         next()
       } else {
         // 用户已经登录，并且路由的获取状态为false
-        // if (data) {
-        next()
-        // } else {
-        gotoRouter(to, next)
-        // }
+        const routerDataFlag = store.getters.routerDataFlag
+        if (routerDataFlag) {
+          next()
+        } else {
+          gotoRouter(to, next)
+        }
         try {
           // get user info
           await store.dispatch('user/getInfo')
@@ -83,7 +83,7 @@ function gotoRouter(to, next) {
       // let routerArr = router.options.routes;
       // let routerAll = routerArr.concat(asyncRouter)
       router.addRoutes(asyncRouter) // vue-router提供的addRouter方法进行路由拼接
-      // data = true // 记录路由获取状态
+      store.dispatch('setRoutrerDataFlag', true) // 将路由获取状态储存到vuex
       store.dispatch('setRouterList', asyncRouter) // 存储到vuex
       // console.log(store.state.routers.RouterList)
       next({ ...to, replace: true }) // hack方法 确保addRoutes已完成

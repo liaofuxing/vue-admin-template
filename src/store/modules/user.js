@@ -76,6 +76,7 @@ const actions = {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       removeToken()
+      resetRouter()
       resolve()
     })
   }

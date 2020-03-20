@@ -80,7 +80,6 @@
 <script>
 import pagination from '@/components/Pagination/pagination'
 import { getList, editDepartment, addDepartment } from '@/api/department'
-import { getMenuTree } from '@/api/menu'
 
 export default {
   name: 'Department',
@@ -112,11 +111,6 @@ export default {
   },
   mounted() {
     this.getDepartmentList(this.searchParam)
-
-    // 获取菜单数据
-    getMenuTree().then(res => {
-      this.treeData = res.data
-    })
   },
   methods: {
     getDepartmentList: function(param) {
