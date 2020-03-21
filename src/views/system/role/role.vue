@@ -54,7 +54,7 @@
     </div>
     <div>
       <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
-        <el-container style="height: 250px;">
+        <el-container style="height: auto;">
           <el-aside width="200px">
             <label>编辑菜单权限</label>
             <tree
