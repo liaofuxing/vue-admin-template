@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '@/store'
 
 Vue.use(Router)
 
@@ -64,8 +65,9 @@ const createRouter = () => new Router({
 
 const router = createRouter()
 
-// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
+  // 将vuex 中获取路由状态设置为false, permission.js 会重新获取从后台获取一次路由
+  store.dispatch('setRoutrerDataFlag', false)
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
 }
