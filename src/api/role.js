@@ -31,3 +31,12 @@ export function getRoleMenu(params) {
     params
   })
 }
+
+// 校验角色名重复
+export function validateRoleNameRepeat(params) {
+  return request({
+    url: 'http://localhost:8090/system/role/validateRoleNameRepeat',
+    method: 'get',
+    params
+  })
+}

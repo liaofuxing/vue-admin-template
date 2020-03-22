@@ -53,11 +53,11 @@
       />
     </div>
     <div>
-      <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
-        <el-form label-width="80px">
+      <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" :show-close="false">
+        <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="部门">
+              <el-form-item label="部门" prop="departmentName">
                 <el-input v-model="form.departmentName" class="searchParam-input" />
               </el-form-item>
             </el-col>
@@ -79,7 +79,7 @@
 
 <script>
 import pagination from '@/components/Pagination/pagination'
-import { getList, editDepartment, addDepartment } from '@/api/department'
+import { getList, editDepartment, addDepartment, validateDepartmentNameRepeat } from '@/api/department'
 
 export default {
   name: 'Department',
@@ -87,6 +87,20 @@ export default {
     pagination
   },
   data() {
+    const validateDepartment = (rule, value, callback) => {
+      const validateValue = { 'roleName': value }
+      if (value === null) {
+        callback(new Error('请输入部门名'))
+      } else {
+        validateDepartmentNameRepeat(validateValue).then(res => {
+          if (res.data) {
+            callback(new Error('部门已存在'))
+          } else {
+            callback()
+          }
+        })
+      }
+    }
     return {
       tableData: [],
       searchParam: {
@@ -102,6 +116,11 @@ export default {
         id: null,
         departmentName: null,
         description: null
+      },
+      rules: {
+        departmentName: [
+          { required: true, validator: validateDepartment, trigger: 'blur' }
+        ]
       },
       formLabelWidth: '120px',
       dialogFormVisible: false,
@@ -157,21 +176,29 @@ export default {
       // const date = new Date()
       // this.form.updateTime = parseTime(date, '{y}-{m}-{d} {h}:{i}:{s}')
       // 应该在then回调里刷新数据，这样能保证，请求到的是更新后的数据
-      if (this.dialogTitle === '新增') {
-        addDepartment(this.form).then(res => {
-          this.getDepartmentList(this.searchParam)
-        })
-      }
-      if (this.dialogTitle === '编辑') {
-        editDepartment(this.form).then(res => {
-          this.getDepartmentList(this.searchParam)
-        })
-      }
-      this.dialogFormVisible = false
+      this.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
+          if (this.dialogTitle === '新增') {
+            addDepartment(this.form).then(res => {
+              this.getDepartmentList(this.searchParam)
+            })
+          }
+          if (this.dialogTitle === '编辑') {
+            editDepartment(this.form).then(res => {
+              this.getDepartmentList(this.searchParam)
+            })
+          }
+          this.dialogFormVisible = false
+        }
+      })
     },
     dialogFormCancel: function() {
+      this.resetForm('ruleForm')
       this.getDepartmentList(this.searchParam)
       this.dialogFormVisible = false
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
     }
   }
 }

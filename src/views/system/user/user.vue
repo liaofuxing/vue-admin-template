@@ -71,23 +71,23 @@
       />
     </div>
     <div>
-      <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
-        <el-form label-width="80px">
+      <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" :show-close="false">
+        <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="用户名">
+              <el-form-item label="用户名" prop="username">
                 <el-input v-model="form.username" class="searchParam-input" />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="账号">
+              <el-form-item label="账号" prop="account">
                 <el-input v-model="form.account" class="searchParam-input" :disabled="true" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="性别">
+              <el-form-item label="性别" prop="gender">
                 <el-select v-model="form.gender" placeholder="请选择">
                   <el-option
                     v-for="item in genderOption"
@@ -99,26 +99,26 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="地址">
+              <el-form-item label="地址" prop="address">
                 <el-input v-model="form.address" class="searchParam-input" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="年龄">
+              <el-form-item label="年龄" prop="age">
                 <el-input v-model="form.age" class="searchParam-input" />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="电话">
+              <el-form-item label="电话" prop="phone">
                 <el-input v-model="form.phone" class="searchParam-input" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="角色">
+              <el-form-item label="角色" prop="roleId">
                 <el-select v-model="form.roleId" placeholder="请选择">
                   <el-option
                     v-for="item in roleOption"
@@ -130,7 +130,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="部门">
+              <el-form-item label="部门" prop="departmentId">
                 <el-select v-model="form.departmentId" placeholder="请选择">
                   <el-option
                     v-for="item in departmentOption"
@@ -158,7 +158,7 @@
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button @click="dialogFormCancel()">取 消</el-button>
           <el-button type="primary" @click="dialogFormSubmit()">确 定</el-button>
         </div>
       </el-dialog>
@@ -168,7 +168,7 @@
 
 <script>
 import pagination from '@/components/Pagination/pagination'
-import { getRoleSelect, getDepartmentSelect, getList, editUser, addUser } from '@/api/user'
+import { getRoleSelect, getDepartmentSelect, getList, editUser, addUser, validateUsernameRepeat } from '@/api/user'
 import { parseTime } from '@/utils/index'
 
 export default {
@@ -177,6 +177,20 @@ export default {
     pagination
   },
   data() {
+    const validateUsername = (rule, value, callback) => {
+      const validateValue = { 'username': value }
+      if (value === null) {
+        callback(new Error('请输入用户名'))
+      } else {
+        validateUsernameRepeat(validateValue).then(res => {
+          if (res.data) {
+            callback(new Error('用户名已存在'))
+          } else {
+            callback()
+          }
+        })
+      }
+    }
     return {
       tableData: [],
       searchParam: {
@@ -203,6 +217,32 @@ export default {
         departmentId: null,
         updateTime: null,
         enabledFlag: null
+      },
+      rules: {
+        username: [
+          { required: true, validator: validateUsername, trigger: 'blur' }
+        ],
+        account: [
+          { required: true, message: '请输入菜单路径', trigger: 'blur' }
+        ],
+        gender: [
+          { required: true, message: '请选择性别', trigger: 'blur' }
+        ],
+        age: [
+          { required: true, message: '请输入年龄', trigger: 'blur' }
+        ],
+        address: [
+          { required: true, message: '请输入地址', trigger: 'blur' }
+        ],
+        phone: [
+          { required: true, message: '请输入手机号', trigger: 'blur' }
+        ],
+        roleId: [
+          { required: true, message: '请选择角色', trigger: 'blur' }
+        ],
+        departmentId: [
+          { required: true, message: '请选择部门', trigger: 'blur' }
+        ]
       },
       formLabelWidth: '120px',
       dialogFormVisible: false,
@@ -294,23 +334,39 @@ export default {
 
     },
     dialogFormSubmit: function() {
-      const date = new Date()
-      const dateParse = parseTime(date, '{y}-{m}-{d} {h}:{i}:{s}')
-      if (this.dialogTitle === '新增') {
-        this.form.creationTime = dateParse
-        this.form.updateTime = dateParse
-        addUser(this.form).then(res => {
-          this.getUserList(this.searchParam)
-        })
-      }
-      if (this.dialogTitle === '编辑') {
-        // 将dialog form updateTime 更新用来驱动table表格updateTime更新，并传回后台
-        this.form.updateTime = dateParse
-        editUser(this.form).then(res => {
-          this.getUserList(this.searchParam)
-        })
-      }
+      // const validate = this.validateRepeat(this.form.username)
+      // if (true) {
+      // this.$refs['ruleForm'].fields[0].error
+      // }
+      this.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
+          const date = new Date()
+          const dateParse = parseTime(date, '{y}-{m}-{d} {h}:{i}:{s}')
+          if (this.dialogTitle === '新增') {
+            this.form.creationTime = dateParse
+            this.form.updateTime = dateParse
+            addUser(this.form).then(res => {
+              this.getUserList(this.searchParam)
+            })
+          }
+          if (this.dialogTitle === '编辑') {
+            // 将dialog form updateTime 更新用来驱动table表格updateTime更新，并传回后台
+            this.form.updateTime = dateParse
+            editUser(this.form).then(res => {
+              this.getUserList(this.searchParam)
+            })
+          }
+          this.dialogFormVisible = false
+        }
+      })
+    },
+    dialogFormCancel: function() {
+      this.resetForm('ruleForm')
+      this.getUserList(this.searchParam)
       this.dialogFormVisible = false
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
     },
     getUuid: function() {
       function S4() {

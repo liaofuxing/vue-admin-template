@@ -24,3 +24,12 @@ export function addDepartment(params) {
   })
 }
 
+// 校验部门名重复
+export function validateDepartmentNameRepeat(params) {
+  return request({
+    url: 'http://localhost:8090/system/department/validateDepartmentNameRepeat',
+    method: 'get',
+    params
+  })
+}
+

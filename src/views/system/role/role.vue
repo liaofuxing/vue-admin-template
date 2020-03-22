@@ -53,7 +53,7 @@
       />
     </div>
     <div>
-      <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible">
+      <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" :show-close="false">
         <el-container style="height: auto;">
           <el-aside width="200px">
             <label>编辑菜单权限</label>
@@ -65,10 +65,10 @@
             />
           </el-aside>
           <el-container>
-            <el-form label-width="80px">
+            <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
               <el-row :gutter="20">
                 <el-col :span="12">
-                  <el-form-item label="角色">
+                  <el-form-item label="角色" prop="roleName">
                     <el-input v-model="form.roleName" class="searchParam-input" />
                   </el-form-item>
                 </el-col>
@@ -93,7 +93,7 @@
 <script>
 import pagination from '@/components/Pagination/pagination'
 import tree from '@/components/Tree/tree'
-import { getList, editRole, addRole, getRoleMenu } from '@/api/role'
+import { getList, editRole, addRole, getRoleMenu, validateRoleNameRepeat } from '@/api/role'
 import { getMenuTree } from '@/api/menu'
 
 export default {
@@ -103,6 +103,20 @@ export default {
     tree
   },
   data() {
+    const validateRoleName = (rule, value, callback) => {
+      const validateValue = { 'roleName': value }
+      if (value === null) {
+        callback(new Error('请输入角色名'))
+      } else {
+        validateRoleNameRepeat(validateValue).then(res => {
+          if (res.data) {
+            callback(new Error('角色已存在'))
+          } else {
+            callback()
+          }
+        })
+      }
+    }
     return {
       tableData: [],
       searchParam: {
@@ -113,6 +127,11 @@ export default {
         pageSize: 5,
         // 一共多少条数据
         total: 0
+      },
+      rules: {
+        roleName: [
+          { required: true, validator: validateRoleName, trigger: 'blur' }
+        ]
       },
       form: {
         id: null,
@@ -197,24 +216,33 @@ export default {
         return
       }
       this.form.treeChecked = this.menuTreeChecked.toString()
-      if (this.dialogTitle === '新增') {
-        addRole(this.form).then(res => {
-          this.getRoleList(this.searchParam)
-        })
-      }
-      if (this.dialogTitle === '编辑') {
-        editRole(this.form).then(res => {
-          this.getRoleList(this.searchParam)
-        })
-      }
-      this.dialogFormVisible = false
+      this.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
+          if (this.dialogTitle === '新增') {
+            addRole(this.form).then(res => {
+              this.getRoleList(this.searchParam)
+            })
+          }
+          if (this.dialogTitle === '编辑') {
+            editRole(this.form).then(res => {
+              this.getRoleList(this.searchParam)
+            })
+          }
+          this.dialogFormVisible = false
+        }
+      })
     },
     dialogFormCancel: function() {
+      // 重置页面校验
+      this.resetForm('ruleForm')
       this.getRoleList(this.searchParam)
       this.dialogFormVisible = false
     },
     treeCheckChange: function(checkedArr) {
       this.menuTreeChecked = checkedArr
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
     }
   }
 }

@@ -56,3 +56,12 @@ export function getDepartmentList() {
   })
 }
 
+// 校验用户名重复
+export function validateUsernameRepeat(params) {
+  return request({
+    url: 'http://localhost:8090/system/systemUser/validateUsernameRepeat',
+    method: 'get',
+    params
+  })
+}
+

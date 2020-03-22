@@ -31,7 +31,7 @@
           <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="菜单名" prop="name">
+                <el-form-item label="菜单名" prop="title">
                   <el-input v-model="form.title" class="searchParam-input" />
                 </el-form-item>
               </el-col>
@@ -43,7 +43,7 @@
             </el-row>
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="组件名" prop="title">
+                <el-form-item label="组件名" prop="name">
                   <el-input v-model="form.name" class="searchParam-input" />
                 </el-form-item>
               </el-col>
@@ -73,11 +73,25 @@
 </template>
 
 <script>
-import { getMenuTree, addMenuTree2Router } from '@/api/menu'
+import { getMenuTree, addMenuTree2Router, validateRouterTitleRepeat } from '@/api/menu'
 
 export default {
   name: 'Menu',
   data() {
+    const validateRouterTitle = (rule, value, callback) => {
+      const validateValue = { 'routerTitle': value }
+      if (value === null) {
+        callback(new Error('请输入菜单名'))
+      } else {
+        validateRouterTitleRepeat(validateValue).then(res => {
+          if (res.data) {
+            callback(new Error('菜单已存在'))
+          } else {
+            callback()
+          }
+        })
+      }
+    }
     return {
       tableData: [],
       form: {
@@ -95,7 +109,7 @@ export default {
       resId: null,
       rules: {
         name: [
-          { required: true, message: '请输入菜单名', trigger: 'blur' }
+          { required: true, message: '请输入组件名', trigger: 'blur' }
         ],
         path: [
           { required: true, message: '请输入菜单路径', trigger: 'blur' }
@@ -104,7 +118,7 @@ export default {
           { required: true, message: '请输入组件地址', trigger: 'blur' }
         ],
         title: [
-          { required: true, message: '请输入菜单title', trigger: 'blur' }
+          { required: true, validator: validateRouterTitle, trigger: 'blur' }
         ],
         icon: [
           { required: true, message: '请输入图标名', trigger: 'blur' }
@@ -153,17 +167,6 @@ export default {
             }
             addMenuTree2Router(this.form).then(res => {
               this.resId = res.data
-              // if (data === undefined) {
-              //   let tableDataIndex = 0
-              //   this.tableData.forEach(function(currentValue, index, arr) {
-              //     if (currentValue.id === newChild.id) {
-              //       tableDataIndex = index
-              //     }
-              //   })
-              //   this.tableData[tableDataIndex].id = res.data
-              // } else {
-              //   this.$set(data, 'id', res.data)
-              // }
             })
           }).catch(() => {
             console.log('取消新增')
