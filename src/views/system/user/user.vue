@@ -36,7 +36,7 @@
       style="width: 100%"
       max-height="100%"
     >
-      <el-table-column type="index" width="150" />
+      <el-table-column type="index" width="100" />
       <el-table-column prop="account" label="账号" width="140" />
       <el-table-column prop="username" label="用户名" width="120" />
       <el-table-column prop="age" label="年龄" width="120" />
