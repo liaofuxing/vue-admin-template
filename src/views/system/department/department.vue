@@ -88,7 +88,7 @@ export default {
   },
   data() {
     const validateDepartment = (rule, value, callback) => {
-      const validateValue = { 'roleName': value }
+      const validateValue = { 'id': this.form.id, 'roleName': value }
       if (value === null) {
         callback(new Error('请输入部门名'))
       } else {
@@ -113,7 +113,7 @@ export default {
         total: 0
       },
       form: {
-        id: null,
+        id: 0,
         departmentName: null,
         description: null
       },
@@ -154,7 +154,7 @@ export default {
     handleAddButtonClick: function() {
       // 清除form值
       const clearForm = {
-        id: null,
+        id: 0,
         departmentName: null,
         description: null
       }

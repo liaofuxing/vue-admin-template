@@ -104,7 +104,7 @@ export default {
   },
   data() {
     const validateRoleName = (rule, value, callback) => {
-      const validateValue = { 'roleName': value }
+      const validateValue = { 'id': this.form.id, 'roleName': value }
       if (value === null) {
         callback(new Error('请输入角色名'))
       } else {
@@ -134,7 +134,7 @@ export default {
         ]
       },
       form: {
-        id: null,
+        id: 0,
         roleName: null,
         description: null,
         treeChecked: []
@@ -178,7 +178,7 @@ export default {
     handleAddButtonClick: function() {
       // 清除form值
       const clearForm = {
-        id: null,
+        id: 0,
         roleName: null,
         description: null
       }

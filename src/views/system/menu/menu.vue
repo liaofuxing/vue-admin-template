@@ -79,7 +79,7 @@ export default {
   name: 'Menu',
   data() {
     const validateRouterTitle = (rule, value, callback) => {
-      const validateValue = { 'routerTitle': value }
+      const validateValue = { 'id': this.form.id, 'routerTitle': value }
       if (value === null) {
         callback(new Error('请输入菜单名'))
       } else {
@@ -95,7 +95,7 @@ export default {
     return {
       tableData: [],
       form: {
-        id: null,
+        id: 0,
         name: null,
         path: null,
         component: null,

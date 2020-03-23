@@ -178,7 +178,7 @@ export default {
   },
   data() {
     const validateUsername = (rule, value, callback) => {
-      const validateValue = { 'username': value }
+      const validateValue = { 'id': this.form.id, 'username': value }
       if (value === null) {
         callback(new Error('请输入用户名'))
       } else {
@@ -206,7 +206,7 @@ export default {
       },
       pageSizes: [3, 6, 9],
       form: {
-        id: null,
+        id: 0,
         username: null,
         account: null,
         gender: null,
@@ -313,7 +313,7 @@ export default {
     handleAddButtonClick: function() {
       // 清除form值
       const clearForm = {
-        id: null,
+        id: 0,
         username: null,
         account: null,
         gender: null,
