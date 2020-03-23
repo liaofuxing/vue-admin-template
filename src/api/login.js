@@ -1,8 +1,9 @@
 import request from '@/utils/request'
 
 export function login(data) {
+  console.log(login)
   return request({
-    url: 'http://localhost:8090/user/login',
+    url: '/user/login',
     method: 'post',
     data
   })
@@ -10,7 +11,7 @@ export function login(data) {
 
 export function getInfo(token) {
   return request({
-    url: 'http://localhost:8090/user/info',
+    url: '/user/info',
     method: 'get',
     params: { token }
   })
@@ -18,14 +19,17 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: 'http://localhost:8090/user/logout',
+    url: '/user/logout',
     method: 'post'
   })
 }
 
+/**
+ *  获取路由列表
+ */
 export function getRouter() {
   return request({
-    url: 'http://localhost:8090/system/router/getRouters',
+    url: '/system/router/getRouters',
     method: 'get'
   })
 }

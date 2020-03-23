@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getList(params) {
   return request({
-    url: 'http://192.168.31.100:8090/system/systemUser/findSystemUserPage',
+    url: '/system/systemUser/findSystemUserPage',
     method: 'post',
     data: params
   })
@@ -10,7 +10,7 @@ export function getList(params) {
 
 export function editUser(params) {
   return request({
-    url: 'http://localhost:8090/system/systemUser/editSystemUser',
+    url: '/system/systemUser/editSystemUser',
     method: 'post',
     data: params
   })
@@ -18,7 +18,7 @@ export function editUser(params) {
 
 export function addUser(params) {
   return request({
-    url: 'http://localhost:8090/system/systemUser/addSystemUser',
+    url: '/system/systemUser/addSystemUser',
     method: 'post',
     data: params
   })
@@ -27,7 +27,7 @@ export function addUser(params) {
 // 获取角色下拉
 export function getRoleSelect() {
   return request({
-    url: 'http://localhost:8090/system/role/getRoleSelect',
+    url: '/system/role/getRoleSelect',
     method: 'get'
   })
 }
@@ -35,7 +35,7 @@ export function getRoleSelect() {
 // 获取部门下拉
 export function getDepartmentSelect() {
   return request({
-    url: 'http://localhost:8090/system/department/getDepartmentSelect',
+    url: '/system/department/getDepartmentSelect',
     method: 'get'
   })
 }
@@ -43,7 +43,7 @@ export function getDepartmentSelect() {
 // 获取角色列表
 export function getRoleList() {
   return request({
-    url: 'http://localhost:8090/system/role/getRoleList',
+    url: '/system/role/getRoleList',
     method: 'get'
   })
 }
@@ -51,7 +51,7 @@ export function getRoleList() {
 // 获取部门列表
 export function getDepartmentList() {
   return request({
-    url: 'http://localhost:8090/system/department/getDepartmentList',
+    url: '/system/department/getDepartmentList',
     method: 'get'
   })
 }
@@ -59,7 +59,7 @@ export function getDepartmentList() {
 // 校验用户名重复
 export function validateUsernameRepeat(params) {
   return request({
-    url: 'http://localhost:8090/system/systemUser/validateUsernameRepeat',
+    url: '/system/systemUser/validateUsernameRepeat',
     method: 'get',
     params
   })
