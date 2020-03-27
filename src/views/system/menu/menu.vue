@@ -151,7 +151,7 @@ export default {
           this.$confirm('确定新增菜单？', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
-            type: 'error'
+            type: 'warning'
           }).then(() => {
             if (data === undefined) {
               this.tableData.push(newChild)

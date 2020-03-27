@@ -44,7 +44,7 @@
       <el-table-column prop="gender" label="性别" :formatter="formatGender" width="120" />
       <el-table-column prop="departmentId" :formatter="formatDepartment" label="部门" width="160" />
       <el-table-column prop="address" label="地址" width="300" />
-      <el-table-column prop="enabledFlag" :formatter="formatenabledFlag" label="是否停用" width="120" />
+      <el-table-column prop="enabledFlag" :formatter="formatEnabledFlag" label="是否停用" width="120" />
       <el-table-column prop="updateTime" label="更新时间" width="200" />
       <el-table-column
         fixed="right"
@@ -283,7 +283,7 @@ export default {
       })
       return label
     },
-    formatenabledFlag: function(row, column) {
+    formatEnabledFlag: function(row, column) {
       return row.enabledFlag === 0 ? '否' : row.enabledFlag === 1 ? '是' : '否'
     },
     getUserList: function(param) {

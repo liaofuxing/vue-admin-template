@@ -65,3 +65,20 @@ export function validateUsernameRepeat(params) {
   })
 }
 
+// 在线用户管理
+export function getUserOnline() {
+  return request({
+    url: '/system/systemUser/getUserOnline',
+    method: 'get'
+  })
+}
+
+// 在线用户强制离线
+export function userForceOffline(params) {
+  return request({
+    url: '/system/systemUser/userForceOffline',
+    method: 'get',
+    params
+  })
+}
+
