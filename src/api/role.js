@@ -24,6 +24,7 @@ export function addRole(params) {
   })
 }
 
+// 获取用户的角色菜单关系
 export function getRoleMenu(params) {
   return request({
     url: '/system/role/getRoleMenu',
