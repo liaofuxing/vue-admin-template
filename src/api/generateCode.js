@@ -38,7 +38,7 @@ function XHRLoadLoadFile(url, data) {
       link.style.display = 'none'
       // 取出下载文件名
       // const fileName = xhr.getResponseHeader('filename')
-      const fileName = data.tableName + '.java'
+      const fileName = data.tableName + '.zip'
       const downlaodFileName = decodeURIComponent(fileName)
       link.setAttribute('download', downlaodFileName)
       link.click()
