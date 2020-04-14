@@ -59,7 +59,13 @@
         <el-table-column prop="dbColumnType" label="数据库字段类型" width="260" />
         <el-table-column prop="javaJavaHumpColumnName" label="Java驼峰字段名" width="260" />
         <el-table-column prop="javaColumnType" label="Java字段类型" width="260" />
-        <el-table-column prop="paginationQueryCondition" label="是否作为分页查询条件" width="320" />
+        <el-table-column prop="paginationQueryCondition" label="是否作为分页查询条件" width="320">
+          <template slot-scope="{row, $index}">
+            <el-switch
+              v-model="tableFieldData[$index].paginationQueryCondition"
+            />
+          </template>
+        </el-table-column>
       </el-table>
     </div>
   </div>
@@ -70,9 +76,6 @@ import { getMysqlTableSelect, getTableField, generateCode } from '@/api/generate
 
 export default {
   name: 'GenerateCode',
-  components: {
-
-  },
   data() {
     return {
       tableFieldData: [],
@@ -83,9 +86,6 @@ export default {
         needPagination: false,
         packagePath: ''
       },
-      rules: {
-      },
-      formLabelWidth: '120px',
       dialogFormVisible: false,
       tableOption: []
     }
