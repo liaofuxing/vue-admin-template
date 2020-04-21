@@ -6,40 +6,81 @@
         <h3 class="title">用户登录</h3>
       </div>
 
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
-      </el-form-item>
+      <div class="tips">
+        <span style="margin-right:20px;"><a @click="handlePhoneLoginClick">{{ tipsHtml }}</a></span>
+      </div>
+      <div v-if="usernameLogin" class="username-div">
+        <el-form-item prop="username">
+          <span class="svg-container">
+            <svg-icon icon-class="user" />
+          </span>
+          <el-input
+            ref="username"
+            v-model="loginForm.username"
+            placeholder="Username"
+            name="username"
+            type="text"
+            tabindex="1"
+            auto-complete="on"
+          />
+        </el-form-item>
 
-      <el-form-item prop="password">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
-          placeholder="Password"
-          name="password"
-          tabindex="2"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-        </span>
-      </el-form-item>
+        <el-form-item prop="password">
+          <span class="svg-container">
+            <svg-icon icon-class="password" />
+          </span>
+          <el-input
+            :key="passwordType"
+            ref="password"
+            v-model="loginForm.password"
+            :type="passwordType"
+            placeholder="Password"
+            name="password"
+            tabindex="2"
+            auto-complete="on"
+            @keyup.enter.native="handleLogin"
+          />
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          </span>
+        </el-form-item>
+      </div>
+
+      <div v-if="phoneLogin" class="sms-div">
+        <el-form-item prop="phone">
+          <span class="svg-container">
+            <svg-icon icon-class="user" />
+          </span>
+          <el-input
+            ref="phone"
+            v-model="loginForm.phone"
+            placeholder="请输入手机号"
+            name="phone"
+            type="text"
+            tabindex="1"
+            auto-complete="on"
+          />
+        </el-form-item>
+
+        <el-form-item prop="smsCode">
+          <span class="svg-container">
+            <svg-icon icon-class="password" />
+          </span>
+          <el-input
+            ref="smsCode"
+            v-model="loginForm.smsCode"
+            type="text"
+            placeholder="请输出验证码"
+            name="smsCode"
+            tabindex="2"
+            auto-complete="on"
+            @keyup.enter.native="handleLogin"
+          />
+          <span class="show-pwd">
+            <el-button type="primary" :disabled="sendSmsButton" @click="handleSendSmsCodeClick">{{ sendSmsCodeHtml }}</el-button>
+          </span>
+        </el-form-item>
+      </div>
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
@@ -72,18 +113,34 @@ export default {
         callback()
       }
     }
+    const validatePhone = (rule, value, callback) => {
+      if (this.phoneLogin && value === '') {
+        callback(new Error('请输入手机号'))
+      } else {
+        callback()
+      }
+    }
     return {
       loginForm: {
         username: 'liaofuxing',
-        password: '123456'
+        password: '123456',
+        phone: '',
+        smsCode: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        phone: [{ required: true, trigger: 'blur', validator: validatePhone }],
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      phoneLogin: false,
+      usernameLogin: true,
+      tipsHtml: '使用手机号登录',
+      sendSmsCodeHtml: '发送验证码',
+      sendSmsButton: false,
+      totalTime: 60
     }
   },
   watch: {
@@ -109,13 +166,57 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.loginForm.username = this.loginForm.username
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
+          if (this.usernameLogin) {
+            this.loginForm.username = this.loginForm.username
+            this.$store.dispatch('user/login', this.loginForm).then(() => {
+              this.$router.push({ path: '/' })
+              this.loading = false
+            }).catch(() => {
+              this.loading = false
+            })
+          } else {
+            const phonelogin = { phone: this.loginForm.phone, smsCode: this.loginForm.smsCode }
+            this.$store.dispatch('user/phoneLogin', phonelogin).then(() => {
+              this.$router.push({ path: '/' })
+              this.loading = false
+            }).catch(() => {
+              this.loading = false
+            })
+          }
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    handlePhoneLoginClick() {
+      this.$refs.loginForm.resetFields()
+      if (this.tipsHtml === '使用手机号登录') {
+        this.tipsHtml = '使用用户名登录'
+        this.usernameLogin = false
+        this.phoneLogin = true
+      } else {
+        this.tipsHtml = '使用手机号登录'
+        this.usernameLogin = true
+        this.phoneLogin = false
+      }
+    },
+    handleSendSmsCodeClick() {
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
+          const phone = this.loginForm.phone
+          this.$store.dispatch('user/sendSmsCode', phone)
+          this.sendSmsButton = true
+          const clock = window.setInterval(() => {
+            this.totalTime--
+            this.sendSmsCodeHtml = '发送验证码(' + this.totalTime + ')'
+            if (this.totalTime < 0) {
+              window.clearInterval(clock)
+              this.sendSmsCodeHtml = '发送验证码'
+              this.totalTime = 60
+              this.sendSmsButton = false
+            }
+          }, 1000)
         } else {
           console.log('error submit!!')
           return false

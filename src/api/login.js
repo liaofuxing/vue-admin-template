@@ -7,6 +7,21 @@ export function login(data) {
     data
   })
 }
+export function sendSmsCode(params) {
+  return request({
+    url: '/user/sendSmsCode',
+    method: 'get',
+    params
+  })
+}
+
+export function phoneLogin(data) {
+  return request({
+    url: '/user/phoneLogin',
+    method: 'post',
+    data
+  })
+}
 
 export function getInfo(token) {
   return request({
