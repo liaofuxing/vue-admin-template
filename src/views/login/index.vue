@@ -130,7 +130,7 @@ export default {
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }],
-        phone: [{ required: true, trigger: 'blur', validator: validatePhone }],
+        phone: [{ required: true, trigger: 'blur', validator: validatePhone }]
       },
       loading: false,
       passwordType: 'password',
