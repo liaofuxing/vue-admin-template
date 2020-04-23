@@ -191,6 +191,10 @@ export default {
     },
     handlePhoneLoginClick() {
       this.$refs.loginForm.resetFields()
+      this.loginForm.username = 'liaofuxing'
+      this.loginForm.password = '123456'
+      this.loginForm.phone = ''
+      this.loginForm.smsCode = ''
       if (this.tipsHtml === '使用手机号登录') {
         this.tipsHtml = '使用用户名登录'
         this.usernameLogin = false
