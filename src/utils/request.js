@@ -61,18 +61,16 @@ service.interceptors.response.use(
         })
       }
       if (res.code === 50001) {
-        // to re-login
-        MessageBox.confirm('账号或密码错误', '登录出错', {
-          confirmButtonText: '重新登录',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
-        }).catch(() => {
-          console.log('取消')
-        })
+        // login Failure
+        Message.error('账号或密码错误')
+      }
+      if (res.code === 50006) {
+        // sms login Failure, not find phone
+        Message.error('手机号不存在')
+      }
+      if (res.code === 50007) {
+        // sms login Failure, smsCode Erorr
+        Message.error('验证码错误')
       }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
@@ -80,9 +78,8 @@ service.interceptors.response.use(
     }
   },
   error => {
-    console.log('err' + error) // for debug
     Message({
-      message: error.message,
+      message: '系统异常,请稍后再试',
       type: 'error',
       duration: 5 * 1000
     })
